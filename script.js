@@ -49,7 +49,7 @@ async function joinChannel() {
         return;
     }
     
-    if (!AGORA_APP_ID || AGORA_APP_ID === "YOUR_APP_ID_HERE") {
+    if (!AGORA_APP_ID || AGORA_APP_ID === "e6bf194c61d84efea61b02a1dd09a0a2") {
         alert('احط App ID بتاعتك من Agora!');
         return;
     }
