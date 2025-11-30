@@ -33,6 +33,12 @@ leaveBtn.addEventListener('click', leaveChannel);
 async function joinChannel() {
     const channelName = channelNameInput.value.trim() || "غرفة-التجربة";
     
+    // تحقق من App ID
+    if (!APP_ID || APP_ID === "YOUR_APP_ID_HERE") {
+        showStatus("❌ App ID غير مضبوط. تأكد من وضع الـ App ID الصحيح", "error");
+        return;
+    }
+    
     showStatus("", "");
     joinBtn.disabled = true;
     joinBtn.textContent = "جاري التحضير...";
@@ -40,6 +46,8 @@ async function joinChannel() {
 
     try {
         console.log("🚀 بدء الاتصال...");
+        console.log("🔑 Using App ID:", APP_ID);
+        console.log("📞 Channel Name:", channelName);
         
         // 1. Initialize Agora Client
         client = AgoraRTC.createClient({ 
@@ -55,7 +63,7 @@ async function joinChannel() {
         client.on("connection-state-change", handleConnectionStateChange);
 
         // 3. انضم للقناة
-        console.log("📞 الانضمام للقناة:", channelName);
+        console.log("📞 الانضمام للقناة...");
         await client.join(APP_ID, channelName, null, null);
         console.log("✅ تم الانضمام بنجاح");
 
@@ -79,7 +87,18 @@ async function joinChannel() {
 
     } catch (error) {
         console.error("❌ Error:", error);
-        showStatus(`خطأ: ${error.message}`, "error");
+        
+        // رسائل خطأ مفصلة
+        let errorMessage = `خطأ: ${error.message}`;
+        if (error.message.includes("INVALID_APP_ID")) {
+            errorMessage = "❌ App ID غير صحيح. تأكد من الـ App ID";
+        } else if (error.message.includes("network")) {
+            errorMessage = "❌ مشكلة في الشبكة. تأكد من اتصال الإنترنت";
+        } else if (error.message.includes("permission")) {
+            errorMessage = "❌ يلزم السماح باستخدام الكاميرا والميكروفون";
+        }
+        
+        showStatus(errorMessage, "error");
     } finally {
         joinBtn.disabled = false;
         joinBtn.textContent = "🚀 ابدأ المكالمة";
@@ -216,4 +235,8 @@ console.log("🔑 App ID:", APP_ID);
 console.log("✅ Ready for video calls!");
 
 // عرض حالة App ID
-showStatus("✅ App ID مضبوط وجاهز للاستخدام", "connected");
+if (APP_ID && APP_ID !== "YOUR_APP_ID_HERE") {
+    showStatus("✅ App ID مضبوط وجاهز للاستخدام", "connected");
+} else {
+    showStatus("❌ App ID غير مضبوط. تأكد من وضع الـ App ID الصحيح", "error");
+}
