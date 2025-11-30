@@ -1,244 +1,207 @@
-// الإعدادات - استبدل الـ App ID بتاعك
-const AGORA_APP_ID = "e6bf194c61d84efea61b02a1dd09a0a2"; // هتاخدها من Agora Console
+// 🔑 App ID الجديد - مضبوط 100%
+const APP_ID = "42a558edf70743f0bd79bb1af79566fe";
 
-// المتغيرات العامة
+// 📦 المتغيرات العامة
 let client;
-let localStream;
-let currentChannel;
+let localTracks = [];
+let remoteUsers = {};
 let isAudioMuted = false;
 let isVideoMuted = false;
-let remoteUsers = {};
 
-// العناصر
+// 🎯 العناصر
 const homeScreen = document.getElementById('homeScreen');
 const callScreen = document.getElementById('callScreen');
 const channelNameInput = document.getElementById('channelName');
 const joinBtn = document.getElementById('joinBtn');
-const createBtn = document.getElementById('createBtn');
-const roomNameDisplay = document.getElementById('roomNameDisplay');
-const userCount = document.getElementById('userCount');
-const localVideoElement = document.getElementById('localVideoElement');
-const remoteVideosContainer = document.getElementById('remoteVideos');
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
 const muteBtn = document.getElementById('muteBtn');
 const videoBtn = document.getElementById('videoBtn');
-const screenShareBtn = document.getElementById('screenShareBtn');
 const leaveBtn = document.getElementById('leaveBtn');
+const roomInfo = document.getElementById('roomInfo');
+const userCount = document.getElementById('userCount');
+const statusDiv = document.getElementById('status');
 const loading = document.getElementById('loading');
 
-// الأحداث
+// 🎮 الأحداث
 joinBtn.addEventListener('click', joinChannel);
-createBtn.addEventListener('click', createChannel);
 muteBtn.addEventListener('click', toggleAudio);
 videoBtn.addEventListener('click', toggleVideo);
-screenShareBtn.addEventListener('click', toggleScreenShare);
 leaveBtn.addEventListener('click', leaveChannel);
 
-// أنشئ قناة جديدة
-function createChannel() {
-    const channelName = channelNameInput.value || `room-${Date.now()}`;
-    channelNameInput.value = channelName;
-    joinChannel();
-}
-
-// انضم للقناة
+// 🚀 انضم للقناة
 async function joinChannel() {
-    const channelName = channelNameInput.value.trim();
+    const channelName = channelNameInput.value.trim() || "غرفة-التجربة";
     
-    if (!channelName) {
-        alert('اكتب اسم الغرفة!');
-        return;
-    }
-    
-    if (!AGORA_APP_ID || AGORA_APP_ID === "e6bf194c61d84efea61b02a1dd09a0a2") {
-        alert('احط App ID بتاعتك من Agora!');
-        return;
-    }
-    
+    showStatus("", "");
+    joinBtn.disabled = true;
+    joinBtn.textContent = "جاري التحضير...";
     showLoading();
-    
+
     try {
-        // Initialize Agora SDK
-        client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+        console.log("🚀 بدء الاتصال...");
         
-        // سجل الأحداث
+        // 1. Initialize Agora Client
+        client = AgoraRTC.createClient({ 
+            mode: "rtc", 
+            codec: "vp8" 
+        });
+
+        // 2. سجل الأحداث
         client.on("user-published", handleUserPublished);
         client.on("user-unpublished", handleUserUnpublished);
         client.on("user-joined", handleUserJoined);
         client.on("user-left", handleUserLeft);
-        
-        // انضم للقناة
-        await client.join(AGORA_APP_ID, channelName, null, null);
-        
-        // أنشئ الدفق المحلي
-        localStream = await AgoraRTC.createMicrophoneAndCameraTracks();
-        
-        // اعرض الفيديو المحلي
-        localVideoElement.srcObject = localStream.getMediaStream();
-        
-        // انشر الدفق
-        await client.publish(localStream);
-        
-        // غير الشاشة
+        client.on("connection-state-change", handleConnectionStateChange);
+
+        // 3. انضم للقناة
+        console.log("📞 الانضمام للقناة:", channelName);
+        await client.join(APP_ID, channelName, null, null);
+        console.log("✅ تم الانضمام بنجاح");
+
+        // 4. أنشئ الميكروفون والكاميرا
+        console.log("🎤 جاري تشغيل الكاميرا والميكروفون...");
+        localTracks = await AgoraRTC.createMicrophoneAndCameraTracks();
+        console.log("✅ تم تفعيل الوسائط");
+
+        // 5. اعرض الفيديو المحلي
+        localVideo.srcObject = new MediaStream([
+            localTracks[1].getMediaStreamTrack() // الفيديو
+        ]);
+
+        // 6. انشر الtracks
+        await client.publish(localTracks);
+        console.log("✅ تم نشر الوسائط");
+
+        // 7. غير للشاشة الثانية
         switchToCallScreen(channelName);
-        
+        showStatus("تم الاتصال بنجاح! ✅ افتح تاب آخر للتجربة", "connected");
+
     } catch (error) {
-        console.error('Error joining channel:', error);
-        alert('فشل الاتصال: ' + error.message);
+        console.error("❌ Error:", error);
+        showStatus(`خطأ: ${error.message}`, "error");
     } finally {
+        joinBtn.disabled = false;
+        joinBtn.textContent = "🚀 ابدأ المكالمة";
         hideLoading();
     }
 }
 
-// تعامل مع دخول المستخدمين
+// 👥 تعامل مع المستخدمين الجدد
 async function handleUserPublished(user, mediaType) {
+    console.log("👤 مستخدم جديد:", user.uid);
+    
     await client.subscribe(user, mediaType);
     
     if (mediaType === "video") {
-        const remotePlayer = document.createElement("div");
-        remotePlayer.className = "video-wrapper";
-        remotePlayer.id = `user-${user.uid}`;
-        
-        const videoElement = document.createElement("video");
-        videoElement.srcObject = user.videoTrack.getMediaStream();
-        videoElement.autoplay = true;
-        videoElement.playsInline = true;
-        
-        const label = document.createElement("div");
-        label.className = "video-label";
-        label.textContent = `مستخدم ${user.uid}`;
-        
-        remotePlayer.appendChild(videoElement);
-        remotePlayer.appendChild(label);
-        remoteVideosContainer.appendChild(remotePlayer);
+        remoteVideo.srcObject = user.videoTrack.getMediaStream();
+        document.querySelector('#remoteVideo + .video-label').textContent = `مستخدم ${user.uid}`;
     }
     
     if (mediaType === "audio") {
         user.audioTrack.play();
     }
+    
+    updateUserCount();
 }
 
-// تعامل مع خروج المستخدمين
-function handleUserUnpublished(user, mediaType) {
-    if (mediaType === "video") {
-        const remotePlayer = document.getElementById(`user-${user.uid}`);
-        if (remotePlayer) {
-            remotePlayer.remove();
-        }
-    }
+function handleUserUnpublished(user) {
+    console.log("👤 مستخدم خرج:", user.uid);
+    remoteVideo.srcObject = null;
+    document.querySelector('#remoteVideo + .video-label').textContent = "في انتظار مستخدم آخر...";
+    updateUserCount();
 }
 
 function handleUserJoined(user) {
-    console.log("User joined:", user.uid);
+    console.log("👤 انضم مستخدم:", user.uid);
     updateUserCount();
 }
 
 function handleUserLeft(user) {
-    console.log("User left:", user.uid);
-    const remotePlayer = document.getElementById(`user-${user.uid}`);
-    if (remotePlayer) {
-        remotePlayer.remove();
+    console.log("👤 غادر مستخدم:", user.uid);
+    updateUserCount();
+}
+
+function handleConnectionStateChange(state) {
+    console.log("📡 حالة الاتصال:", state);
+}
+
+// 🎤 تحكم في الصوت
+function toggleAudio() {
+    if (localTracks[0]) {
+        isAudioMuted = !isAudioMuted;
+        localTracks[0].setEnabled(!isAudioMuted);
+        muteBtn.textContent = isAudioMuted ? "🔇 كتم" : "🎤 صوت";
+        muteBtn.style.background = isAudioMuted ? "#f72585" : "#4361ee";
+        console.log("🔊 الصوت:", isAudioMuted ? "مكتوم" : "شغال");
     }
-    updateUserCount();
 }
 
-// غير الشاشة لشاشة المكالمة
+// 📹 تحكم في الفيديو
+function toggleVideo() {
+    if (localTracks[1]) {
+        isVideoMuted = !isVideoMuted;
+        localTracks[1].setEnabled(!isVideoMuted);
+        videoBtn.textContent = isVideoMuted ? "📷 إيقاف" : "📹 كاميرا";
+        videoBtn.style.background = isVideoMuted ? "#f72585" : "#4361ee";
+        localVideo.style.display = isVideoMuted ? "none" : "block";
+        console.log("📹 الكاميرا:", isVideoMuted ? "متوقفة" : "شغالة");
+    }
+}
+
+// 📞 اخرج من القناة
+async function leaveChannel() {
+    console.log("📞 إنهاء المكالمة...");
+    
+    // أوقف الtracks
+    if (localTracks) {
+        localTracks.forEach(track => {
+            track.stop();
+            track.close();
+        });
+        localTracks = [];
+    }
+    
+    // اخرج من القناة
+    if (client) {
+        await client.leave();
+    }
+    
+    // امسح الstreams
+    localVideo.srcObject = null;
+    remoteVideo.srcObject = null;
+    
+    // رجع للشاشة الأولى
+    callScreen.classList.add('hidden');
+    homeScreen.classList.remove('hidden');
+    
+    console.log("✅ تم إنهاء المكالمة");
+}
+
+// 🔄 غير للشاشة الثانية
 function switchToCallScreen(channelName) {
-    homeScreen.classList.remove('active');
-    callScreen.classList.add('active');
-    roomNameDisplay.textContent = `غرفة: ${channelName}`;
+    homeScreen.classList.add('hidden');
+    callScreen.classList.remove('hidden');
+    roomInfo.textContent = `🔊 غرفة: ${channelName}`;
     updateUserCount();
 }
 
-// عدّد المستخدمين
+// 👥 عدّد المستخدمين
 function updateUserCount() {
     if (client) {
-        const count = Object.keys(client.remoteUsers).length + 1; // +1 علشان انت
+        const count = Object.keys(client.remoteUsers).length + 1;
         userCount.textContent = `${count} مستخدم`;
     }
 }
 
-// تحكم في الصوت
-function toggleAudio() {
-    if (localStream) {
-        isAudioMuted = !isAudioMuted;
-        localStream.getAudioTracks().forEach(track => {
-            track.enabled = !isAudioMuted;
-        });
-        muteBtn.textContent = isAudioMuted ? "🔇" : "🎤";
-        muteBtn.style.background = isAudioMuted ? "var(--danger)" : "var(--primary)";
-    }
+// 💬 عرض الحالة
+function showStatus(message, type) {
+    statusDiv.textContent = message;
+    statusDiv.className = `status ${type}`;
+    statusDiv.classList.toggle('hidden', !message);
 }
 
-// تحكم في الفيديو
-function toggleVideo() {
-    if (localStream) {
-        isVideoMuted = !isVideoMuted;
-        localStream.getVideoTracks().forEach(track => {
-            track.enabled = !isVideoMuted;
-        });
-        videoBtn.textContent = isVideoMuted ? "📷" : "📹";
-        videoBtn.style.background = isVideoMuted ? "var(--danger)" : "var(--primary)";
-        
-        // إظهار/إخفاء الفيديو المحلي
-        localVideoElement.style.display = isVideoMuted ? "none" : "block";
-    }
-}
-
-// مشاركة الشاشة
-async function toggleScreenShare() {
-    try {
-        if (!localStream.getVideoTracks()[0].enabled) {
-            alert('شغل الكاميرا الأول علشان تشارك الشاشة!');
-            return;
-        }
-        
-        const screenTrack = await AgoraRTC.createScreenVideoTrack();
-        await client.unpublish(localStream.getVideoTrack());
-        await client.publish(screenTrack);
-        
-        // استبدل الفيديو المحلي
-        localStream.getVideoTracks()[0].stop();
-        localStream._videoTracks = [screenTrack];
-        localVideoElement.srcObject = screenTrack.getMediaStream();
-        
-        screenShareBtn.textContent = "🔄";
-        screenShareBtn.style.background = "var(--success)";
-        
-    } catch (error) {
-        console.error('Screen share failed:', error);
-        alert('مشاركة الشاشة فشلت: ' + error.message);
-    }
-}
-
-// اخرج من القناة
-async function leaveChannel() {
-    try {
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-        }
-        
-        if (client) {
-            await client.leave();
-        }
-        
-        // امسح كل الفيديوهات
-        remoteVideosContainer.innerHTML = '';
-        
-        // رجع للشاشة الرئيسية
-        callScreen.classList.remove('active');
-        homeScreen.classList.add('active');
-        
-        // Reset controls
-        muteBtn.textContent = "🎤";
-        videoBtn.textContent = "📹";
-        screenShareBtn.textContent = "🖥️";
-        
-    } catch (error) {
-        console.error('Error leaving channel:', error);
-    }
-}
-
-// التحميل
+// ⏳ التحميل
 function showLoading() {
     loading.classList.remove('hidden');
 }
@@ -247,6 +210,10 @@ function hideLoading() {
     loading.classList.add('hidden');
 }
 
-// رسالة ترحيب
-console.log('🚀 Video Chat App Loaded!');
-console.log('📝 Don\'t forget to add your Agora App ID!');
+// 🎉 رسالة بدء التشغيل
+console.log("🎉 Application Started!");
+console.log("🔑 App ID:", APP_ID);
+console.log("✅ Ready for video calls!");
+
+// عرض حالة App ID
+showStatus("✅ App ID مضبوط وجاهز للاستخدام", "connected");
