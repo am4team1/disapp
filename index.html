@@ -8,69 +8,56 @@
 </head>
 <body>
     <div class="container">
-        <!-- الشاشة الرئيسية -->
-        <div id="homeScreen" class="screen active">
-            <header>
-                <h1>🎥 منصة المكالمات</h1>
-                <p>اتصل بأصدقائك في أي وقت!</p>
-            </header>
+        <!-- شاشة الدخول -->
+        <div id="homeScreen" class="card">
+            <h1>🎥 منصة المكالمات</h1>
+            <p class="subtitle">اتصل بأصدقائك في ثواني!</p>
             
-            <div class="form-section">
-                <div class="input-group">
-                    <label for="channelName">اسم الغرفة:</label>
-                    <input type="text" id="channelName" placeholder="اكتب اسم الغرفة...">
-                </div>
-                
-                <div class="button-group">
-                    <button id="joinBtn" class="btn primary">انضم للغرفة</button>
-                    <button id="createBtn" class="btn secondary">أنشئ غرفة جديدة</button>
-                </div>
+            <div class="input-group">
+                <label for="channelName">اسم الغرفة:</label>
+                <input type="text" id="channelName" placeholder="اكتب اسم الغرفة هنا..." value="غرفة-التجربة">
             </div>
             
-            <div class="features">
-                <div class="feature-card">
-                    <span>🎯</span>
-                    <h3>سهل الاستخدام</h3>
-                    <p>مافيش حاجة معقدة، اضغط وشغل</p>
-                </div>
-                <div class="feature-card">
-                    <span>⚡</span>
-                    <h3>سريع</h3>
-                    <p>مكالمات بدون تقطيع</p>
-                </div>
-                <div class="feature-card">
-                    <span>🔒</span>
-                    <h3>آمن</h3>
-                    <p>خصوصيتك محمية</p>
-                </div>
+            <div class="input-group">
+                <label for="userName">اسمك:</label>
+                <input type="text" id="userName" placeholder="اكتب اسمك..." value="مستخدم">
+            </div>
+            
+            <button id="joinBtn" class="btn">🚀 ابدأ المكالمة</button>
+            
+            <div id="status" class="status hidden"></div>
+            
+            <div style="margin-top: 30px; color: #6c757d; font-size: 0.9rem;">
+                <p>💡 <strong>طريقة التجربة:</strong> افتح هذا الموقع في تاب آخر وأدخل نفس اسم الغرفة</p>
+                <p>✅ <strong>الحالة:</strong> App ID مضبوط وجاهز للاستخدام</p>
             </div>
         </div>
 
         <!-- شاشة المكالمة -->
-        <div id="callScreen" class="screen">
-            <div class="call-header">
-                <h2>🔊 مكالمة حية</h2>
-                <div class="call-info">
-                    <span id="roomNameDisplay">غرفة: </span>
-                    <span id="userCount">0 مستخدم</span>
-                </div>
-            </div>
+        <div id="callScreen" class="card hidden">
+            <h2>🔊 مكالمة حية</h2>
+            <div id="roomInfo" style="margin: 15px 0;"></div>
+            <div id="userCount" class="user-count">1 مستخدم</div>
             
             <div class="video-container">
-                <div id="localVideo" class="video-wrapper">
-                    <video id="localVideoElement" autoplay muted></video>
+                <div class="video-wrapper">
+                    <video id="localVideo" autoplay muted></video>
                     <div class="video-label">أنت</div>
                 </div>
-                <div id="remoteVideos" class="remote-videos">
-                    <!-- الفيديوهات التانية هتظهر هنا -->
+                <div class="video-wrapper">
+                    <video id="remoteVideo" autoplay></video>
+                    <div class="video-label">في انتظار مستخدم آخر...</div>
                 </div>
             </div>
             
             <div class="controls">
-                <button id="muteBtn" class="control-btn">🎤</button>
-                <button id="videoBtn" class="control-btn">📹</button>
-                <button id="screenShareBtn" class="control-btn">🖥️</button>
-                <button id="leaveBtn" class="control-btn danger">📞 إنهاء</button>
+                <button id="muteBtn" class="control-btn">🎤 صوت</button>
+                <button id="videoBtn" class="control-btn">📹 كاميرا</button>
+                <button id="leaveBtn" class="control-btn danger">📞 إنهاء المكالمة</button>
+            </div>
+            
+            <div style="margin-top: 20px; color: #6c757d;">
+                <p>🔊 تأكد من السماح للموقع باستخدام الميكروفون والكاميرا</p>
             </div>
         </div>
     </div>
@@ -78,10 +65,10 @@
     <!-- نافذة التحميل -->
     <div id="loading" class="loading hidden">
         <div class="spinner"></div>
-        <p>جاري الاتصال...</p>
+        <p style="font-size: 1.2rem; margin-top: 15px;">جاري الاتصال بالغرفة...</p>
     </div>
 
-    <!-- مكتبات Agora -->
+    <!-- مكتبة Agora -->
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
     <script src="script.js"></script>
 </body>
