@@ -8,41 +8,121 @@
 </head>
 <body>
     <div class="container">
-        <!-- شاشة الدخول -->
-        <div id="homeScreen" class="card">
-            <h1>🎥 منصة المكالمات</h1>
-            <p class="subtitle">اتصل بأصدقائك في ثواني!</p>
-            
-            <div class="input-group">
-                <label for="channelName">اسم الغرفة:</label>
-                <input type="text" id="channelName" placeholder="اكتب اسم الغرفة هنا..." value="غرفة-التجربة">
+        <!-- شاشة الترحيب -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="welcome-card">
+                <div class="logo">
+                    <h1>🎥 منصة المكالمات</h1>
+                    <p class="subtitle">اتصل بأصدقائك في ثواني!</p>
+                </div>
+                
+                <div class="welcome-actions">
+                    <button id="createRoomBtn" class="btn primary large">
+                        🏠 إنشاء غرفة جديدة
+                    </button>
+                    
+                    <button id="joinRoomBtn" class="btn secondary large">
+                        🔑 الانضمام إلى غرفة
+                    </button>
+                </div>
+
+                <div class="features">
+                    <div class="feature">
+                        <span>🔒</span>
+                        <div>
+                            <h3>غرف آمنة</h3>
+                            <p>كل غرفة لها كود خاص</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <span>⚡</span>
+                        <div>
+                            <h3>اتصال فوري</h3>
+                            <p>بدون تسجيل أو تعقيد</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <span>🎯</span>
+                        <div>
+                            <h3>سهل الاستخدام</h3>
+                            <p>واجهة بسيطة وعربية</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="input-group">
-                <label for="userName">اسمك:</label>
-                <input type="text" id="userName" placeholder="اكتب اسمك..." value="مستخدم">
+        </div>
+
+        <!-- شاشة إنشاء الغرفة -->
+        <div id="createRoomScreen" class="screen">
+            <div class="card">
+                <h2>🏠 إنشاء غرفة جديدة</h2>
+                
+                <div class="input-group">
+                    <label for="roomName">اسم الغرفة:</label>
+                    <input type="text" id="roomName" placeholder="مثال: غرفة الأصدقاء">
+                </div>
+                
+                <div class="input-group">
+                    <label for="userNameCreate">اسمك:</label>
+                    <input type="text" id="userNameCreate" placeholder="اكتب اسمك هنا">
+                </div>
+
+                <div class="action-buttons">
+                    <button id="generateRoomBtn" class="btn primary">🎲 إنشاء كود الغرفة</button>
+                    <button id="backFromCreateBtn" class="btn secondary">↩ رجوع</button>
+                </div>
+
+                <div id="roomCodeSection" class="room-code-section hidden">
+                    <div class="room-code-display">
+                        <h3>🎯 كود الغرفة</h3>
+                        <div class="code" id="roomCodeDisplay">جاري التوليد...</div>
+                        <p class="code-hint">شارك هذا الكود مع من تريد دعوته</p>
+                    </div>
+                    
+                    <button id="joinWithCodeBtn" class="btn success">🚀 انضم بالكود</button>
+                </div>
             </div>
-            
-            <button id="joinBtn" class="btn">🚀 ابدأ المكالمة</button>
-            
-            <div id="status" class="status hidden"></div>
-            
-            <div style="margin-top: 30px; color: #6c757d; font-size: 0.9rem;">
-                <p>💡 <strong>طريقة التجربة:</strong> افتح هذا الموقع في تاب آخر وأدخل نفس اسم الغرفة</p>
-                <p>✅ <strong>الحالة:</strong> App ID مضبوط وجاهز للاستخدام</p>
+        </div>
+
+        <!-- شاشة الانضمام للغرفة -->
+        <div id="joinRoomScreen" class="screen">
+            <div class="card">
+                <h2>🔑 الانضمام إلى غرفة</h2>
+                
+                <div class="input-group">
+                    <label for="roomCodeInput">كود الغرفة:</label>
+                    <input type="text" id="roomCodeInput" placeholder="أدخل كود الغرفة هنا">
+                </div>
+                
+                <div class="input-group">
+                    <label for="userNameJoin">اسمك:</label>
+                    <input type="text" id="userNameJoin" placeholder="اكتب اسمك هنا">
+                </div>
+
+                <div class="action-buttons">
+                    <button id="joinWithCodeBtn" class="btn primary">🚀 انضم الآن</button>
+                    <button id="backFromJoinBtn" class="btn secondary">↩ رجوع</button>
+                </div>
+
+                <div id="joinError" class="error-message hidden"></div>
             </div>
         </div>
 
         <!-- شاشة المكالمة -->
-        <div id="callScreen" class="card hidden">
-            <h2>🔊 مكالمة حية</h2>
-            <div id="roomInfo" style="margin: 15px 0;"></div>
-            <div id="userCount" class="user-count">1 مستخدم</div>
+        <div id="callScreen" class="screen">
+            <div class="call-header">
+                <h2>🔊 مكالمة حية</h2>
+                <div class="call-info">
+                    <span id="roomNameDisplay">غرفة: </span>
+                    <span id="userCount" class="user-count">1 مستخدم</span>
+                    <span id="roomCodeDisplaySmall" class="room-code-small"></span>
+                </div>
+            </div>
             
             <div class="video-container">
                 <div class="video-wrapper">
                     <video id="localVideo" autoplay muted></video>
-                    <div class="video-label">أنت</div>
+                    <div class="video-label" id="localUserName">أنت</div>
                 </div>
                 <div class="video-wrapper">
                     <video id="remoteVideo" autoplay></video>
@@ -51,13 +131,20 @@
             </div>
             
             <div class="controls">
-                <button id="muteBtn" class="control-btn">🎤 صوت</button>
-                <button id="videoBtn" class="control-btn">📹 كاميرا</button>
-                <button id="leaveBtn" class="control-btn danger">📞 إنهاء المكالمة</button>
+                <button id="muteBtn" class="control-btn">🎤</button>
+                <button id="videoBtn" class="control-btn">📹</button>
+                <button id="inviteBtn" class="control-btn">📩 كود الدعوة</button>
+                <button id="leaveBtn" class="control-btn danger">📞 إنهاء</button>
             </div>
-            
-            <div style="margin-top: 20px; color: #6c757d;">
-                <p>🔊 تأكد من السماح للموقع باستخدام الميكروفون والكاميرا</p>
+
+            <div id="inviteSection" class="invite-section hidden">
+                <div class="invite-card">
+                    <h3>📩 دعوة الأصدقاء</h3>
+                    <p>شارك هذا الكود للانضمام للغرفة:</p>
+                    <div class="invite-code" id="inviteCodeDisplay"></div>
+                    <button id="copyInviteBtn" class="btn success">📋 نسخ الكود</button>
+                    <button id="closeInviteBtn" class="btn secondary">✕ إغلاق</button>
+                </div>
             </div>
         </div>
     </div>
@@ -65,7 +152,7 @@
     <!-- نافذة التحميل -->
     <div id="loading" class="loading hidden">
         <div class="spinner"></div>
-        <p style="font-size: 1.2rem; margin-top: 15px;">جاري الاتصال بالغرفة...</p>
+        <p>جاري الاتصال بالغرفة...</p>
     </div>
 
     <!-- مكتبة Agora -->
