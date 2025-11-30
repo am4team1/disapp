@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة المكالمات - Video Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- الشاشة الرئيسية -->
+        <div id="homeScreen" class="screen active">
+            <header>
+                <h1>🎥 منصة المكالمات</h1>
+                <p>اتصل بأصدقائك في أي وقت!</p>
+            </header>
+            
+            <div class="form-section">
+                <div class="input-group">
+                    <label for="channelName">اسم الغرفة:</label>
+                    <input type="text" id="channelName" placeholder="اكتب اسم الغرفة...">
+                </div>
+                
+                <div class="button-group">
+                    <button id="joinBtn" class="btn primary">انضم للغرفة</button>
+                    <button id="createBtn" class="btn secondary">أنشئ غرفة جديدة</button>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <span>🎯</span>
+                    <h3>سهل الاستخدام</h3>
+                    <p>مافيش حاجة معقدة، اضغط وشغل</p>
+                </div>
+                <div class="feature-card">
+                    <span>⚡</span>
+                    <h3>سريع</h3>
+                    <p>مكالمات بدون تقطيع</p>
+                </div>
+                <div class="feature-card">
+                    <span>🔒</span>
+                    <h3>آمن</h3>
+                    <p>خصوصيتك محمية</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة المكالمة -->
+        <div id="callScreen" class="screen">
+            <div class="call-header">
+                <h2>🔊 مكالمة حية</h2>
+                <div class="call-info">
+                    <span id="roomNameDisplay">غرفة: </span>
+                    <span id="userCount">0 مستخدم</span>
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <div id="localVideo" class="video-wrapper">
+                    <video id="localVideoElement" autoplay muted></video>
+                    <div class="video-label">أنت</div>
+                </div>
+                <div id="remoteVideos" class="remote-videos">
+                    <!-- الفيديوهات التانية هتظهر هنا -->
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="muteBtn" class="control-btn">🎤</button>
+                <button id="videoBtn" class="control-btn">📹</button>
+                <button id="screenShareBtn" class="control-btn">🖥️</button>
+                <button id="leaveBtn" class="control-btn danger">📞 إنهاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التحميل -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>جاري الاتصال...</p>
+    </div>
+
+    <!-- مكتبات Agora -->
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
