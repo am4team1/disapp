@@ -1,119 +1,247 @@
-// 🔑 App ID الجديد - مضبوط 100%
+// 🔑 App ID
 const APP_ID = "42a558edf70743f0bd79bb1af79566fe";
 
 // 📦 المتغيرات العامة
 let client;
 let localTracks = [];
-let remoteUsers = {};
-let isAudioMuted = false;
-let isVideoMuted = false;
+let currentRoomCode = "";
+let currentRoomName = "";
+let currentUserName = "";
 
 // 🎯 العناصر
-const homeScreen = document.getElementById('homeScreen');
-const callScreen = document.getElementById('callScreen');
-const channelNameInput = document.getElementById('channelName');
-const joinBtn = document.getElementById('joinBtn');
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
-const muteBtn = document.getElementById('muteBtn');
-const videoBtn = document.getElementById('videoBtn');
-const leaveBtn = document.getElementById('leaveBtn');
-const roomInfo = document.getElementById('roomInfo');
-const userCount = document.getElementById('userCount');
-const statusDiv = document.getElementById('status');
+const screens = {
+    welcome: document.getElementById('welcomeScreen'),
+    create: document.getElementById('createRoomScreen'),
+    join: document.getElementById('joinRoomScreen'),
+    call: document.getElementById('callScreen')
+};
+
+const buttons = {
+    createRoom: document.getElementById('createRoomBtn'),
+    joinRoom: document.getElementById('joinRoomBtn'),
+    generateRoom: document.getElementById('generateRoomBtn'),
+    joinWithCode: document.getElementById('joinWithCodeBtn'),
+    backFromCreate: document.getElementById('backFromCreateBtn'),
+    backFromJoin: document.getElementById('backFromJoinBtn'),
+    leave: document.getElementById('leaveBtn'),
+    mute: document.getElementById('muteBtn'),
+    video: document.getElementById('videoBtn'),
+    invite: document.getElementById('inviteBtn'),
+    copyInvite: document.getElementById('copyInviteBtn'),
+    closeInvite: document.getElementById('closeInviteBtn')
+};
+
+const inputs = {
+    roomName: document.getElementById('roomName'),
+    userNameCreate: document.getElementById('userNameCreate'),
+    roomCodeInput: document.getElementById('roomCodeInput'),
+    userNameJoin: document.getElementById('userNameJoin')
+};
+
+const displays = {
+    roomCode: document.getElementById('roomCodeDisplay'),
+    roomCodeSmall: document.getElementById('roomCodeDisplaySmall'),
+    inviteCode: document.getElementById('inviteCodeDisplay'),
+    roomName: document.getElementById('roomNameDisplay'),
+    userCount: document.getElementById('userCount'),
+    localUserName: document.getElementById('localUserName'),
+    joinError: document.getElementById('joinError')
+};
+
+const sections = {
+    roomCode: document.getElementById('roomCodeSection'),
+    invite: document.getElementById('inviteSection')
+};
+
+const videos = {
+    local: document.getElementById('localVideo'),
+    remote: document.getElementById('remoteVideo')
+};
+
 const loading = document.getElementById('loading');
 
-// 🎮 الأحداث
-joinBtn.addEventListener('click', joinChannel);
-muteBtn.addEventListener('click', toggleAudio);
-videoBtn.addEventListener('click', toggleVideo);
-leaveBtn.addEventListener('click', leaveChannel);
-
-// 🚀 انضم للقناة
-async function joinChannel() {
-    const channelName = channelNameInput.value.trim() || "غرفة-التجربة";
+// 🎮 تهيئة الأحداث
+function initializeEvents() {
+    // شاشة الترحيب
+    buttons.createRoom.addEventListener('click', () => switchScreen('create'));
+    buttons.joinRoom.addEventListener('click', () => switchScreen('join'));
     
-    // تحقق من App ID
-    if (!APP_ID || APP_ID === "YOUR_APP_ID_HERE") {
-        showStatus("❌ App ID غير مضبوط. تأكد من وضع الـ App ID الصحيح", "error");
+    // شاشة الإنشاء
+    buttons.generateRoom.addEventListener('click', generateRoomCode);
+    buttons.backFromCreate.addEventListener('click', () => switchScreen('welcome'));
+    
+    // شاشة الانضمام
+    buttons.joinWithCode.addEventListener('click', joinWithRoomCode);
+    buttons.backFromJoin.addEventListener('click', () => switchScreen('welcome'));
+    
+    // شاشة المكالمة
+    buttons.leave.addEventListener('click', leaveChannel);
+    buttons.mute.addEventListener('click', toggleAudio);
+    buttons.video.addEventListener('click', toggleVideo);
+    buttons.invite.addEventListener('click', showInviteSection);
+    buttons.copyInvite.addEventListener('click', copyInviteCode);
+    buttons.closeInvite.addEventListener('click', hideInviteSection);
+}
+
+// 🔄 تبديل الشاشات
+function switchScreen(screenName) {
+    Object.values(screens).forEach(screen => {
+        screen.classList.remove('active');
+    });
+    screens[screenName].classList.add('active');
+    
+    // إعادة تعيين الحقول
+    if (screenName === 'welcome') {
+        resetForms();
+    }
+}
+
+// 🔧 إعادة تعيين النماذج
+function resetForms() {
+    inputs.roomName.value = '';
+    inputs.userNameCreate.value = '';
+    inputs.roomCodeInput.value = '';
+    inputs.userNameJoin.value = '';
+    sections.roomCode.classList.add('hidden');
+    displays.joinError.classList.add('hidden');
+    hideInviteSection();
+}
+
+// 🎲 إنشاء كود الغرفة
+function generateRoomCode() {
+    const roomName = inputs.roomName.value.trim();
+    const userName = inputs.userNameCreate.value.trim();
+    
+    if (!roomName) {
+        alert('يرجى إدخال اسم الغرفة');
         return;
     }
     
-    showStatus("", "");
-    joinBtn.disabled = true;
-    joinBtn.textContent = "جاري التحضير...";
-    showLoading();
+    if (!userName) {
+        alert('يرجى إدخال اسمك');
+        return;
+    }
+    
+    // إنشاء كود عشوائي مكون من 6 أحرف/أرقام
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    currentRoomCode = code;
+    currentRoomName = roomName;
+    currentUserName = userName;
+    
+    displays.roomCode.textContent = code;
+    sections.roomCode.classList.remove('hidden');
+    
+    // حفظ بيانات الغرفة
+    saveRoomData(code, roomName, userName);
+}
 
+// 💾 حفظ بيانات الغرفة
+function saveRoomData(code, roomName, userName) {
+    const roomData = {
+        code: code,
+        name: roomName,
+        creator: userName,
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem(`room_${code}`, JSON.stringify(roomData));
+}
+
+// 🔍 الانضمام بكود الغرفة
+function joinWithRoomCode() {
+    const roomCode = inputs.roomCodeInput.value.trim().toUpperCase();
+    const userName = inputs.userNameJoin.value.trim();
+    
+    if (!roomCode) {
+        showJoinError('يرجى إدخال كود الغرفة');
+        return;
+    }
+    
+    if (!userName) {
+        showJoinError('يرجى إدخال اسمك');
+        return;
+    }
+    
+    // التحقق من وجود الغرفة
+    const roomData = localStorage.getItem(`room_${roomCode}`);
+    if (!roomData) {
+        showJoinError('كود الغرفة غير صحيح');
+        return;
+    }
+    
+    const room = JSON.parse(roomData);
+    currentRoomCode = roomCode;
+    currentRoomName = room.name;
+    currentUserName = userName;
+    
+    // الانضمام للمكالمة
+    joinChannel();
+}
+
+// ❌ عرض خطأ الانضمام
+function showJoinError(message) {
+    displays.joinError.textContent = message;
+    displays.joinError.classList.remove('hidden');
+}
+
+// 🚀 الانضمام للقناة
+async function joinChannel() {
+    showLoading();
+    
     try {
-        console.log("🚀 بدء الاتصال...");
-        console.log("🔑 Using App ID:", APP_ID);
-        console.log("📞 Channel Name:", channelName);
+        // استخدام كود الغرفة كاسم القناة في Agora
+        const channelName = currentRoomCode;
         
-        // 1. Initialize Agora Client
+        console.log("🚀 الانضمام للقناة:", channelName);
+        
+        // Initialize Agora Client
         client = AgoraRTC.createClient({ 
             mode: "rtc", 
             codec: "vp8" 
         });
 
-        // 2. سجل الأحداث
+        // تسجيل الأحداث
         client.on("user-published", handleUserPublished);
         client.on("user-unpublished", handleUserUnpublished);
         client.on("user-joined", handleUserJoined);
         client.on("user-left", handleUserLeft);
-        client.on("connection-state-change", handleConnectionStateChange);
 
-        // 3. انضم للقناة
-        console.log("📞 الانضمام للقناة...");
+        // الانضمام للقناة
         await client.join(APP_ID, channelName, null, null);
         console.log("✅ تم الانضمام بنجاح");
 
-        // 4. أنشئ الميكروفون والكاميرا
-        console.log("🎤 جاري تشغيل الكاميرا والميكروفون...");
+        // إنشاء الميكروفون والكاميرا
         localTracks = await AgoraRTC.createMicrophoneAndCameraTracks();
         console.log("✅ تم تفعيل الوسائط");
 
-        // 5. اعرض الفيديو المحلي
-        localVideo.srcObject = new MediaStream([
-            localTracks[1].getMediaStreamTrack() // الفيديو
+        // عرض الفيديو المحلي
+        videos.local.srcObject = new MediaStream([
+            localTracks[1].getMediaStreamTrack()
         ]);
 
-        // 6. انشر الtracks
+        // نشر الtracks
         await client.publish(localTracks);
         console.log("✅ تم نشر الوسائط");
 
-        // 7. غير للشاشة الثانية
-        switchToCallScreen(channelName);
-        showStatus("تم الاتصال بنجاح! ✅ افتح تاب آخر للتجربة", "connected");
+        // الانتقال لشاشة المكالمة
+        switchToCallScreen();
 
     } catch (error) {
         console.error("❌ Error:", error);
-        
-        // رسائل خطأ مفصلة
-        let errorMessage = `خطأ: ${error.message}`;
-        if (error.message.includes("INVALID_APP_ID")) {
-            errorMessage = "❌ App ID غير صحيح. تأكد من الـ App ID";
-        } else if (error.message.includes("network")) {
-            errorMessage = "❌ مشكلة في الشبكة. تأكد من اتصال الإنترنت";
-        } else if (error.message.includes("permission")) {
-            errorMessage = "❌ يلزم السماح باستخدام الكاميرا والميكروفون";
-        }
-        
-        showStatus(errorMessage, "error");
+        alert(`خطأ في الاتصال: ${error.message}`);
     } finally {
-        joinBtn.disabled = false;
-        joinBtn.textContent = "🚀 ابدأ المكالمة";
         hideLoading();
     }
 }
 
-// 👥 تعامل مع المستخدمين الجدد
+// 👥 التعامل مع المستخدمين
 async function handleUserPublished(user, mediaType) {
     console.log("👤 مستخدم جديد:", user.uid);
     
     await client.subscribe(user, mediaType);
     
     if (mediaType === "video") {
-        remoteVideo.srcObject = user.videoTrack.getMediaStream();
+        videos.remote.srcObject = user.videoTrack.getMediaStream();
         document.querySelector('#remoteVideo + .video-label').textContent = `مستخدم ${user.uid}`;
     }
     
@@ -126,7 +254,7 @@ async function handleUserPublished(user, mediaType) {
 
 function handleUserUnpublished(user) {
     console.log("👤 مستخدم خرج:", user.uid);
-    remoteVideo.srcObject = null;
+    videos.remote.srcObject = null;
     document.querySelector('#remoteVideo + .video-label').textContent = "في انتظار مستخدم آخر...";
     updateUserCount();
 }
@@ -141,38 +269,64 @@ function handleUserLeft(user) {
     updateUserCount();
 }
 
-function handleConnectionStateChange(state) {
-    console.log("📡 حالة الاتصال:", state);
+// 🔄 الانتقال لشاشة المكالمة
+function switchToCallScreen() {
+    switchScreen('call');
+    displays.roomName.textContent = `غرفة: ${currentRoomName}`;
+    displays.roomCodeSmall.textContent = `كود: ${currentRoomCode}`;
+    displays.localUserName.textContent = currentUserName;
+    updateUserCount();
+}
+
+// 👥 تحديث عدد المستخدمين
+function updateUserCount() {
+    if (client) {
+        const count = Object.keys(client.remoteUsers).length + 1;
+        displays.userCount.textContent = `${count} مستخدم`;
+    }
 }
 
 // 🎤 تحكم في الصوت
 function toggleAudio() {
     if (localTracks[0]) {
-        isAudioMuted = !isAudioMuted;
-        localTracks[0].setEnabled(!isAudioMuted);
-        muteBtn.textContent = isAudioMuted ? "🔇 كتم" : "🎤 صوت";
-        muteBtn.style.background = isAudioMuted ? "#f72585" : "#4361ee";
-        console.log("🔊 الصوت:", isAudioMuted ? "مكتوم" : "شغال");
+        const isMuted = !localTracks[0].enabled;
+        localTracks[0].setEnabled(isMuted);
+        buttons.mute.textContent = isMuted ? "🎤" : "🔇";
+        buttons.mute.style.background = isMuted ? "#4361ee" : "#f72585";
     }
 }
 
 // 📹 تحكم في الفيديو
 function toggleVideo() {
     if (localTracks[1]) {
-        isVideoMuted = !isVideoMuted;
-        localTracks[1].setEnabled(!isVideoMuted);
-        videoBtn.textContent = isVideoMuted ? "📷 إيقاف" : "📹 كاميرا";
-        videoBtn.style.background = isVideoMuted ? "#f72585" : "#4361ee";
-        localVideo.style.display = isVideoMuted ? "none" : "block";
-        console.log("📹 الكاميرا:", isVideoMuted ? "متوقفة" : "شغالة");
+        const isEnabled = !localTracks[1].enabled;
+        localTracks[1].setEnabled(isEnabled);
+        buttons.video.textContent = isEnabled ? "📹" : "📷";
+        buttons.video.style.background = isEnabled ? "#4361ee" : "#f72585";
+        videos.local.style.display = isEnabled ? "block" : "none";
     }
 }
 
-// 📞 اخرج من القناة
+// 📩 عرض قسم الدعوة
+function showInviteSection() {
+    displays.inviteCode.textContent = currentRoomCode;
+    sections.invite.classList.remove('hidden');
+}
+
+function hideInviteSection() {
+    sections.invite.classList.add('hidden');
+}
+
+// 📋 نسخ كود الدعوة
+function copyInviteCode() {
+    navigator.clipboard.writeText(currentRoomCode).then(() => {
+        alert('تم نسخ كود الدعوة! 📋');
+    });
+}
+
+// 📞 إنهاء المكالمة
 async function leaveChannel() {
-    console.log("📞 إنهاء المكالمة...");
-    
-    // أوقف الtracks
+    // إيقاف الtracks
     if (localTracks) {
         localTracks.forEach(track => {
             track.stop();
@@ -181,43 +335,18 @@ async function leaveChannel() {
         localTracks = [];
     }
     
-    // اخرج من القناة
+    // الخروج من القناة
     if (client) {
         await client.leave();
     }
     
-    // امسح الstreams
-    localVideo.srcObject = null;
-    remoteVideo.srcObject = null;
+    // مسح الstreams
+    videos.local.srcObject = null;
+    videos.remote.srcObject = null;
     
-    // رجع للشاشة الأولى
-    callScreen.classList.add('hidden');
-    homeScreen.classList.remove('hidden');
-    
-    console.log("✅ تم إنهاء المكالمة");
-}
-
-// 🔄 غير للشاشة الثانية
-function switchToCallScreen(channelName) {
-    homeScreen.classList.add('hidden');
-    callScreen.classList.remove('hidden');
-    roomInfo.textContent = `🔊 غرفة: ${channelName}`;
-    updateUserCount();
-}
-
-// 👥 عدّد المستخدمين
-function updateUserCount() {
-    if (client) {
-        const count = Object.keys(client.remoteUsers).length + 1;
-        userCount.textContent = `${count} مستخدم`;
-    }
-}
-
-// 💬 عرض الحالة
-function showStatus(message, type) {
-    statusDiv.textContent = message;
-    statusDiv.className = `status ${type}`;
-    statusDiv.classList.toggle('hidden', !message);
+    // العودة للشاشة الرئيسية
+    switchScreen('welcome');
+    resetForms();
 }
 
 // ⏳ التحميل
@@ -229,14 +358,9 @@ function hideLoading() {
     loading.classList.add('hidden');
 }
 
-// 🎉 رسالة بدء التشغيل
-console.log("🎉 Application Started!");
-console.log("🔑 App ID:", APP_ID);
-console.log("✅ Ready for video calls!");
-
-// عرض حالة App ID
-if (APP_ID && APP_ID !== "YOUR_APP_ID_HERE") {
-    showStatus("✅ App ID مضبوط وجاهز للاستخدام", "connected");
-} else {
-    showStatus("❌ App ID غير مضبوط. تأكد من وضع الـ App ID الصحيح", "error");
-}
+// 🎉 بدء التطبيق
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEvents();
+    console.log("🎉 Application Started!");
+    console.log("🔑 App ID:", APP_ID);
+});
