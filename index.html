@@ -3,160 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المكالمات - Video Chat</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MeetHub - منصة المكالمات</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="welcome-page">
     <div class="container">
-        <!-- شاشة الترحيب -->
-        <div id="welcomeScreen" class="screen active">
-            <div class="welcome-card">
-                <div class="logo">
-                    <h1>🎥 منصة المكالمات</h1>
-                    <p class="subtitle">اتصل بأصدقائك في ثواني!</p>
-                </div>
-                
-                <div class="welcome-actions">
-                    <button id="createRoomBtn" class="btn primary large">
-                        🏠 إنشاء غرفة جديدة
-                    </button>
+        <nav class="nav-bar">
+            <div class="logo">
+                <h1>🎙️ MeetHub</h1>
+                <span class="tagline">منصة المكالمات الاحترافية</span>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="hero-section">
+                <div class="hero-text">
+                    <h2>اتصل. شارك. تواصل.</h2>
+                    <p class="hero-subtitle">منصة عربية لمكالمات الفيديو بجودة عالية وسهولة استخدام</p>
                     
-                    <button id="joinRoomBtn" class="btn secondary large">
-                        🔑 الانضمام إلى غرفة
-                    </button>
+                    <div class="hero-buttons">
+                        <a href="create-room.html" class="btn btn-primary btn-large">
+                            <span class="btn-icon">🎯</span>
+                            <span class="btn-text">إنشاء مكالمة جديدة</span>
+                        </a>
+                        
+                        <a href="join-room.html" class="btn btn-secondary btn-large">
+                            <span class="btn-icon">🔑</span>
+                            <span class="btn-text">الانضمام إلى مكالمة</span>
+                        </a>
+                    </div>
                 </div>
-
-                <div class="features">
-                    <div class="feature">
-                        <span>🔒</span>
-                        <div>
-                            <h3>غرف آمنة</h3>
-                            <p>كل غرفة لها كود خاص</p>
+                
+                <div class="hero-image">
+                    <div class="video-preview">
+                        <div class="video-screen">
+                            <div class="user-video active">
+                                <div class="user-name">أحمد</div>
+                            </div>
+                            <div class="user-video">
+                                <div class="user-name">محمد</div>
+                            </div>
+                            <div class="user-video">
+                                <div class="user-name">سارة</div>
+                            </div>
+                            <div class="user-video">
+                                <div class="user-name">يوسف</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="feature">
-                        <span>⚡</span>
-                        <div>
-                            <h3>اتصال فوري</h3>
-                            <p>بدون تسجيل أو تعقيد</p>
-                        </div>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <h3>لماذا تختار MeetHub؟</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h4>سريع وفوري</h4>
+                        <p>انضم للمكالمات في ثوانٍ بدون تسجيل معقد</p>
                     </div>
-                    <div class="feature">
-                        <span>🎯</span>
-                        <div>
-                            <h3>سهل الاستخدام</h3>
-                            <p>واجهة بسيطة وعربية</p>
-                        </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h4>آمن وخاص</h4>
+                        <p>كل مكالمة لها كود خاص وآمن</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h4>واجهة عربية</h4>
+                        <p>تصميم عربي سهل الاستخدام للجميع</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💎</div>
+                        <h4>مجاني بالكامل</h4>
+                        <p>لا رسوم، لا حدود، استخدمه كما تريد</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
 
-        <!-- شاشة إنشاء الغرفة -->
-        <div id="createRoomScreen" class="screen">
-            <div class="card">
-                <h2>🏠 إنشاء غرفة جديدة</h2>
-                
-                <div class="input-group">
-                    <label for="roomName">اسم الغرفة:</label>
-                    <input type="text" id="roomName" placeholder="مثال: غرفة الأصدقاء">
-                </div>
-                
-                <div class="input-group">
-                    <label for="userNameCreate">اسمك:</label>
-                    <input type="text" id="userNameCreate" placeholder="اكتب اسمك هنا">
-                </div>
-
-                <div class="action-buttons">
-                    <button id="generateRoomBtn" class="btn primary">🎲 إنشاء كود الغرفة</button>
-                    <button id="backFromCreateBtn" class="btn secondary">↩ رجوع</button>
-                </div>
-
-                <div id="roomCodeSection" class="room-code-section hidden">
-                    <div class="room-code-display">
-                        <h3>🎯 كود الغرفة</h3>
-                        <div class="code" id="roomCodeDisplay">جاري التوليد...</div>
-                        <p class="code-hint">شارك هذا الكود مع من تريد دعوته</p>
-                    </div>
-                    
-                    <button id="joinWithCodeBtn" class="btn success">🚀 انضم بالكود</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- شاشة الانضمام للغرفة -->
-        <div id="joinRoomScreen" class="screen">
-            <div class="card">
-                <h2>🔑 الانضمام إلى غرفة</h2>
-                
-                <div class="input-group">
-                    <label for="roomCodeInput">كود الغرفة:</label>
-                    <input type="text" id="roomCodeInput" placeholder="أدخل كود الغرفة هنا">
-                </div>
-                
-                <div class="input-group">
-                    <label for="userNameJoin">اسمك:</label>
-                    <input type="text" id="userNameJoin" placeholder="اكتب اسمك هنا">
-                </div>
-
-                <div class="action-buttons">
-                    <button id="joinWithCodeBtn" class="btn primary">🚀 انضم الآن</button>
-                    <button id="backFromJoinBtn" class="btn secondary">↩ رجوع</button>
-                </div>
-
-                <div id="joinError" class="error-message hidden"></div>
-            </div>
-        </div>
-
-        <!-- شاشة المكالمة -->
-        <div id="callScreen" class="screen">
-            <div class="call-header">
-                <h2>🔊 مكالمة حية</h2>
-                <div class="call-info">
-                    <span id="roomNameDisplay">غرفة: </span>
-                    <span id="userCount" class="user-count">1 مستخدم</span>
-                    <span id="roomCodeDisplaySmall" class="room-code-small"></span>
-                </div>
-            </div>
-            
-            <div class="video-container">
-                <div class="video-wrapper">
-                    <video id="localVideo" autoplay muted></video>
-                    <div class="video-label" id="localUserName">أنت</div>
-                </div>
-                <div class="video-wrapper">
-                    <video id="remoteVideo" autoplay></video>
-                    <div class="video-label">في انتظار مستخدم آخر...</div>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <button id="muteBtn" class="control-btn">🎤</button>
-                <button id="videoBtn" class="control-btn">📹</button>
-                <button id="inviteBtn" class="control-btn">📩 كود الدعوة</button>
-                <button id="leaveBtn" class="control-btn danger">📞 إنهاء</button>
-            </div>
-
-            <div id="inviteSection" class="invite-section hidden">
-                <div class="invite-card">
-                    <h3>📩 دعوة الأصدقاء</h3>
-                    <p>شارك هذا الكود للانضمام للغرفة:</p>
-                    <div class="invite-code" id="inviteCodeDisplay"></div>
-                    <button id="copyInviteBtn" class="btn success">📋 نسخ الكود</button>
-                    <button id="closeInviteBtn" class="btn secondary">✕ إغلاق</button>
-                </div>
-            </div>
-        </div>
+        <footer class="footer">
+            <p>© 2024 MeetHub. جميع الحقوق محفوظة.</p>
+            <p class="footer-links">
+                <a href="#">الشروط والأحكام</a> | 
+                <a href="#">سياسة الخصوصية</a> | 
+                <a href="#">اتصل بنا</a>
+            </p>
+        </footer>
     </div>
-
-    <!-- نافذة التحميل -->
-    <div id="loading" class="loading hidden">
-        <div class="spinner"></div>
-        <p>جاري الاتصال بالغرفة...</p>
-    </div>
-
-    <!-- مكتبة Agora -->
-    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.19.2.js"></script>
-    <script src="script.js"></script>
+    
+    <script src="js/main.js"></script>
 </body>
 </html>
