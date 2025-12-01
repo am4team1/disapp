@@ -1,131 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إنشاء مكالمة جديدة - MeetHub</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body class="create-room-page">
-    <div class="container">
-        <nav class="nav-bar">
-            <div class="logo">
-                <a href="index.html" class="back-link">← رجوع</a>
-                <h1>🎯 إنشاء مكالمة جديدة</h1>
-            </div>
-        </nav>
-
-        <main class="main-content">
-            <div class="create-room-container">
-                <div class="create-room-card">
-                    <div class="form-section">
-                        <div class="form-group">
-                            <label for="roomName">اسم المكالمة:</label>
-                            <input type="text" id="roomName" placeholder="مثال: اجتماع فريق العمل" 
-                                   class="form-input">
-                            <small class="form-hint">اختر اسمًا يعبر عن طبيعة المكالمة</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="userName">اسمك:</label>
-                            <input type="text" id="userName" placeholder="اكتب اسمك هنا" 
-                                   class="form-input">
-                        </div>
-
-                        <div class="form-group">
-                            <label>إعدادات المكالمة:</label>
-                            <div class="settings-grid">
-                                <label class="checkbox">
-                                    <input type="checkbox" id="allowVideo" checked>
-                                    <span>✅ السماح بالكاميرا</span>
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" id="allowAudio" checked>
-                                    <span>✅ السماح بالميكروفون</span>
-                                </label>
-                                <label class="checkbox">
-                                    <input type="checkbox" id="requirePassword">
-                                    <span>🔒 كلمة مرور للدخول</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div id="passwordSection" class="form-group hidden">
-                            <label for="roomPassword">كلمة مرور المكالمة:</label>
-                            <input type="password" id="roomPassword" 
-                                   placeholder="اختر كلمة مرور قوية" class="form-input">
-                        </div>
-
-                        <div class="action-buttons">
-                            <button id="createRoomBtn" class="btn btn-primary btn-large">
-                                <span class="btn-icon">🎲</span>
-                                <span class="btn-text">إنشاء المكالمة</span>
-                            </button>
-                            
-                            <a href="index.html" class="btn btn-secondary">
-                                إلغاء
-                            </a>
-                        </div>
-                    </div>
-
-                    <div id="roomCreatedSection" class="room-created-section hidden">
-                        <div class="success-message">
-                            <div class="success-icon">🎉</div>
-                            <h3>تم إنشاء المكالمة بنجاح!</h3>
-                            <p>شارك كود المكالمة مع المشاركين</p>
-                            
-                            <div class="room-code-display">
-                                <div class="code" id="roomCode">جاري التوليد...</div>
-                                <div class="room-info">
-                                    <span>اسم المكالمة: <strong id="createdRoomName"></strong></span>
-                                    <span>المضيف: <strong id="hostName"></strong></span>
-                                </div>
-                            </div>
-
-                            <div class="room-actions">
-                                <button id="copyCodeBtn" class="btn btn-success">
-                                    <span class="btn-icon">📋</span>
-                                    <span class="btn-text">نسخ الكود</span>
-                                </button>
-                                
-                                <button id="startMeetingBtn" class="btn btn-primary">
-                                    <span class="btn-icon">🚀</span>
-                                    <span class="btn-text">بدء المكالمة الآن</span>
-                                </button>
-                                
-                                <a href="index.html" class="btn btn-secondary">
-                                    الصفحة الرئيسية
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="instructions-card">
-                    <h3>🎯 كيف تعمل المكالمات؟</h3>
-                    <ol class="instructions-list">
-                        <li>👤 اكتب اسم المكالمة واسمك</li>
-                        <li>🎲 اضغط على "إنشاء المكالمة"</li>
-                        <li>📋 شارك الكود المولد مع المشاركين</li>
-                        <li>🚀 اضغط على "بدء المكالمة" للدخول</li>
-                        <li>🔊 تأكد من السماح للكاميرا والميكروفون</li>
-                    </ol>
-                    
-                    <div class="tips">
-                        <h4>💡 نصائح سريعة:</h4>
-                        <ul>
-                            <li>استخدم اسمًا واضحًا للمكالمة</li>
-                            <li>حافظ على كلمة المرور آمنة</li>
-                            <li>شارك الكود مع المشاركين فقط</li>
-                            <li>تأكد من اتصال إنترنت جيد</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-    
-    <script src="js/agora-sdk.js"></script>
-    <script src="js/create-room.js"></script>
-</body>
-</html>

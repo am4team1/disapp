@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء مكالمة جديدة - MeetHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="create-room-page">
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="logo">
+                <a href="index.html" class="back-link">← رجوع للصفحة الرئيسية</a>
+                <h1>🎯 إنشاء مكالمة جديدة</h1>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="form-card">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="roomName">اسم المكالمة:</label>
+                        <input type="text" id="roomName" placeholder="مثال: اجتماع فريق العمل" 
+                               class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userName">اسمك:</label>
+                        <input type="text" id="userName" placeholder="اكتب اسمك هنا" 
+                               class="form-input">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="createRoomBtn" class="btn btn-primary btn-large">
+                            <span class="btn-icon">🎲</span>
+                            <span class="btn-text">إنشاء المكالمة</span>
+                        </button>
+                        
+                        <a href="index.html" class="btn btn-secondary">
+                            إلغاء
+                        </a>
+                    </div>
+                </div>
+
+                <div id="roomCreatedSection" class="room-created-section hidden">
+                    <div class="success-message">
+                        <div class="success-icon">🎉</div>
+                        <h3>تم إنشاء المكالمة بنجاح!</h3>
+                        <p>شارك كود المكالمة مع المشاركين</p>
+                        
+                        <div class="room-code-display">
+                            <div class="code" id="roomCode">جاري التوليد...</div>
+                            <div class="room-info">
+                                <span>اسم المكالمة: <strong id="createdRoomName"></strong></span>
+                                <span>المضيف: <strong id="hostName"></strong></span>
+                            </div>
+                        </div>
+
+                        <div class="room-actions">
+                            <button id="copyCodeBtn" class="btn btn-success">
+                                <span class="btn-icon">📋</span>
+                                <span class="btn-text">نسخ الكود</span>
+                            </button>
+                            
+                            <a href="call.html" id="startMeetingBtn" class="btn btn-primary">
+                                <span class="btn-icon">🚀</span>
+                                <span class="btn-text">بدء المكالمة الآن</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="create.js"></script>
+</body>
+</html>
