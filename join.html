@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الانضمام إلى مكالمة - MeetHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="join-room-page">
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="logo">
+                <a href="index.html" class="back-link">← رجوع للصفحة الرئيسية</a>
+                <h1>🔑 الانضمام إلى مكالمة</h1>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="form-card">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="joinRoomCode">كود المكالمة:</label>
+                        <input type="text" id="joinRoomCode" 
+                               placeholder="أدخل كود المكالمة المكون من 6 أحرف"
+                               class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="joinUserName">اسمك:</label>
+                        <input type="text" id="joinUserName" 
+                               placeholder="اكتب اسمك هنا" 
+                               class="form-input">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="joinRoomBtn" class="btn btn-primary btn-large">
+                            <span class="btn-icon">🚀</span>
+                            <span class="btn-text">الدخول إلى المكالمة</span>
+                        </button>
+                        
+                        <a href="index.html" class="btn btn-secondary">
+                            إلغاء
+                        </a>
+                    </div>
+
+                    <div id="joinError" class="error-message hidden">
+                        <span class="error-icon">❌</span>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="join.js"></script>
+</body>
+</html>
