@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مكالمة - MeetHub</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/call.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="call-page">
     <div class="call-container">
@@ -21,21 +20,6 @@
                         <button class="copy-btn-small" onclick="copyRoomCode()">📋</button>
                     </div>
                 </div>
-                
-                <div class="room-details">
-                    <div class="detail-item">
-                        <span class="detail-label">اسم المكالمة:</span>
-                        <span id="currentRoomName" class="detail-value">اجتماع فريق العمل</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">المضيف:</span>
-                        <span id="roomHost" class="detail-value">أحمد</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">وقت البدء:</span>
-                        <span id="callStartTime" class="detail-value">--:--</span>
-                    </div>
-                </div>
             </div>
 
             <!-- قائمة المشاركين -->
@@ -49,34 +33,10 @@
                     <div class="participant active" id="localParticipant">
                         <div class="participant-avatar">أنت</div>
                         <div class="participant-info">
-                            <span class="participant-name" id="localUserName">أحمد</span>
+                            <span class="participant-name" id="localUserName">مستخدم</span>
                             <span class="participant-status">متصل</span>
                         </div>
-                        <div class="participant-actions">
-                            <button class="action-btn mic-btn active">🎤</button>
-                            <button class="action-btn cam-btn active">📹</button>
-                        </div>
                     </div>
-                    <!-- سيتم إضافة المشاركين الآخرين هنا -->
-                </div>
-            </div>
-
-            <!-- الأدوات -->
-            <div class="tools-section">
-                <h4>🛠️ الأدوات</h4>
-                <div class="tools-grid">
-                    <button class="tool-btn" onclick="shareScreen()">
-                        <span class="tool-icon">🖥️</span>
-                        <span class="tool-text">مشاركة الشاشة</span>
-                    </button>
-                    <button class="tool-btn" onclick="toggleChat()">
-                        <span class="tool-icon">💬</span>
-                        <span class="tool-text">الدردشة</span>
-                    </button>
-                    <button class="tool-btn" onclick="showSettings()">
-                        <span class="tool-icon">⚙️</span>
-                        <span class="tool-text">الإعدادات</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -86,17 +46,13 @@
             <!-- شريط التحكم العلوي -->
             <div class="top-bar">
                 <div class="room-title">
-                    <h2 id="mainRoomName">اجتماع فريق العمل</h2>
+                    <h2 id="mainRoomName">مكالمة</h2>
                     <div class="call-timer">
                         <span id="callTimer">00:00</span>
                     </div>
                 </div>
                 
                 <div class="top-controls">
-                    <button class="record-btn" onclick="toggleRecording()">
-                        <span class="record-icon">🔴</span>
-                        <span>تسجيل</span>
-                    </button>
                     <button class="leave-btn" onclick="leaveCall()">
                         <span class="leave-icon">📞</span>
                         <span>إنهاء المكالمة</span>
@@ -106,7 +62,7 @@
 
             <!-- شبكة الفيديو -->
             <div class="video-grid" id="videoGrid">
-                <!-- سيتم إضافة فيديوهات المشاركين هنا -->
+                <!-- الفيديو المحلي -->
                 <div class="video-container local-video">
                     <div class="video-wrapper">
                         <video id="localVideo" autoplay muted></video>
@@ -136,47 +92,11 @@
                         <span class="btn-text">كاميرا</span>
                     </button>
                     
-                    <button class="control-btn large" id="screenShareBtn">
-                        <span class="btn-icon">🖥️</span>
-                        <span class="btn-text">شاشة</span>
-                    </button>
-                    
                     <button class="control-btn large danger" onclick="leaveCall()">
                         <span class="btn-icon">📞</span>
                         <span class="btn-text">إنهاء</span>
                     </button>
                 </div>
-                
-                <div class="extra-controls">
-                    <button class="control-btn small" onclick="toggleParticipants()">
-                        <span class="btn-icon">👥</span>
-                    </button>
-                    
-                    <button class="control-btn small" onclick="toggleChatPanel()">
-                        <span class="btn-icon">💬</span>
-                    </button>
-                    
-                    <button class="control-btn small" onclick="showMoreOptions()">
-                        <span class="btn-icon">⋯</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- لوحة الدردشة الجانبية -->
-        <div class="chat-panel" id="chatPanel">
-            <div class="chat-header">
-                <h4>💬 الدردشة</h4>
-                <button class="close-chat" onclick="toggleChatPanel()">×</button>
-            </div>
-            
-            <div class="chat-messages" id="chatMessages">
-                <!-- سيتم إضافة الرسائل هنا -->
-            </div>
-            
-            <div class="chat-input">
-                <input type="text" id="messageInput" placeholder="اكتب رسالة...">
-                <button id="sendMessageBtn">➤</button>
             </div>
         </div>
     </div>
@@ -190,24 +110,18 @@
             </div>
             
             <div class="modal-body">
-                <p>شارك هذا الرابط أو الكود للدعوة:</p>
+                <p>شارك هذا الكود للدعوة:</p>
                 
                 <div class="invite-code">
                     <code id="inviteCodeDisplay">XXXXXX</code>
                     <button class="copy-btn" onclick="copyInviteCode()">📋 نسخ الكود</button>
-                </div>
-                
-                <div class="share-buttons">
-                    <button class="share-btn whatsapp" onclick="shareWhatsApp()">📱 واتساب</button>
-                    <button class="share-btn telegram" onclick="shareTelegram()">✈️ تيليجرام</button>
-                    <button class="share-btn link" onclick="copyInviteLink()">🔗 نسخ الرابط</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- مكتبة Agora -->
-    <script src="js/agora-sdk.js"></script>
-    <script src="js/call.js"></script>
+    <script src="agora-sdk.js"></script>
+    <script src="call.js"></script>
 </body>
 </html>
